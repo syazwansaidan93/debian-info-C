@@ -18,7 +18,7 @@ The server uses a **thread pool** model to efficiently handle multiple, frequent
 1.  **Clone the repository** (assuming the code is in a file named `system_monitor.c`):
 
     ```bash
-    git clone [https://github.com/your-username/your-repository-name.git](https://github.com/your-username/your-repository-name.git)
+    git clone https://github.com/your-username/your-repository-name.git
     ```
 
 2.  **Compile the code**: The project requires the `pthread` library for threading.
