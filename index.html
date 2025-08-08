@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white p-4 sm:p-8 font-sans transition-colors duration-500">
+    <div id="dashboard-content" class="max-w-7xl mx-auto py-8">
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">CPU & System</h2>
+            <div class="flex flex-wrap gap-6 justify-center">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg flex-1 min-w-[280px] max-w-full lg:max-w-[calc(50%-1rem)] transition-transform transform hover:scale-105">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 text-white bg-indigo-500 rounded-full p-3">
+                            <i data-lucide="cpu" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">CPU Usage</h3>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="cpu-usage-value"></p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-indigo-500 h-2.5 rounded-full transition-all duration-500 ease-in-out" id="cpu-usage-progress"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="cpu-usage-text"></p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg flex-1 min-w-[280px] max-w-full lg:max-w-[calc(50%-1rem)] transition-transform transform hover:scale-105">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 text-white bg-indigo-500 rounded-full p-3">
+                            <i data-lucide="thermometer" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">CPU Temp</h3>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="cpu-temp-value"></p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1" id="cpu-temp-uptime-value"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Memory</h2>
+            <div class="flex flex-wrap gap-6 justify-center">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg flex-1 min-w-[280px] max-w-full lg:max-w-[calc(50%-1rem)] transition-transform transform hover:scale-105">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 text-white bg-indigo-500 rounded-full p-3">
+                            <i data-lucide="memory-stick" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">RAM Used</h3>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="ram-used-value"></p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-indigo-500 h-2.5 rounded-full transition-all duration-500 ease-in-out" id="ram-progress"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="ram-text"></p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg flex-1 min-w-[280px] max-w-full lg:max-w-[calc(50%-1rem)] transition-transform transform hover:scale-105">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 text-white bg-indigo-500 rounded-full p-3">
+                            <i data-lucide="memory-stick" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Swap Used</h3>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="swap-used-value"></p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-indigo-500 h-2.5 rounded-full transition-all duration-500 ease-in-out" id="swap-progress"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="swap-text"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Disk Usage</h2>
+            <div class="flex flex-wrap gap-6 justify-center">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg flex-1 min-w-[280px] max-w-full lg:max-w-[calc(50%-1rem)] transition-transform transform hover:scale-105">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 text-white bg-indigo-500 rounded-full p-3">
+                            <i data-lucide="hard-drive" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Main Disk</h3>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="main-disk-used-value"></p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-indigo-500 h-2.5 rounded-full transition-all duration-500 ease-in-out" id="main-disk-progress"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="main-disk-text"></p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg flex-1 min-w-[280px] max-w-full lg:max-w-[calc(50%-1rem)] transition-transform transform hover:scale-105" id="usb-disk-card" style="display:none;">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 text-white bg-indigo-500 rounded-full p-3">
+                            <i data-lucide="hard-drive" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">USB Disk</h3>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1" id="usb-disk-used-value"></p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-indigo-500 h-2.5 rounded-full transition-all duration-500 ease-in-out" id="usb-disk-progress"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="usb-disk-text"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Network</h2>
+            <div class="flex flex-wrap gap-6 justify-center">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg flex-1 min-w-[280px] max-w-full lg:max-w-[calc(50%-1rem)] transition-transform transform hover:scale-105">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 text-white bg-indigo-500 rounded-full p-3">
+                            <i data-lucide="activity" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Network Speed</h3>
+                            <p class="text-xl font-bold text-gray-900 dark:text-white mt-2" id="network-speed-value"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg flex-1 min-w-[280px] max-w-full lg:max-w-[calc(50%-1rem)] transition-transform transform hover:scale-105">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 text-white bg-indigo-500 rounded-full p-3">
+                            <i data-lucide="globe" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Total Data Transferred</h3>
+                            <p class="text-xl font-bold text-gray-900 dark:text-white mt-2" id="network-total-value"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        const API_URL = 'http://192.168.1.3:3040/stats';
+        
+        const formatBytes = (bytes) => {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        };
+
+        const formatUptime = (seconds) => {
+            const days = Math.floor(seconds / (3600 * 24));
+            seconds %= (3600 * 24);
+            const hours = Math.floor(seconds / 3600);
+            seconds %= 3600;
+            const minutes = Math.floor(seconds / 60);
+            return `Uptime: ${days}d ${hours}h ${minutes}m`;
+        };
+
+        const formatTemp = (millicelsius) => {
+            return (millicelsius / 1000).toFixed(1);
+        };
+
+        const updateDashboard = (stats) => {
+            document.getElementById('cpu-usage-value').textContent = `${stats.cpu_usage_percent.toFixed(2)}%`;
+            document.getElementById('cpu-usage-progress').style.width = `${stats.cpu_usage_percent}%`;
+            document.getElementById('cpu-usage-text').textContent = `${stats.cpu_usage_percent.toFixed(2)}% used`;
+
+            document.getElementById('cpu-temp-value').textContent = `${formatTemp(stats.cpu_temp_millicelsius)} °C`;
+            document.getElementById('cpu-temp-uptime-value').textContent = formatUptime(stats.cpu_uptime_seconds);
+
+            const ramUsedKB = stats.ram_used_kb;
+            const ramTotalKB = stats.ram_total_kb;
+            const ramProgress = (ramUsedKB / ramTotalKB) * 100;
+            document.getElementById('ram-used-value').textContent = `${formatBytes(ramUsedKB * 1024)}`;
+            document.getElementById('ram-used-value').innerHTML += `<span class="text-sm font-medium text-gray-500 dark:text-gray-400"> of ${formatBytes(ramTotalKB * 1024)}</span>`;
+            document.getElementById('ram-progress').style.width = `${ramProgress}%`;
+            document.getElementById('ram-text').textContent = `${ramProgress.toFixed(2)}% used`;
+
+            const swapUsedKB = stats.swap_used_kb;
+            const swapTotalKB = stats.swap_total_kb;
+            const swapProgress = (swapUsedKB / swapTotalKB) * 100;
+            document.getElementById('swap-used-value').textContent = `${formatBytes(swapUsedKB * 1024)}`;
+            document.getElementById('swap-used-value').innerHTML += `<span class="text-sm font-medium text-gray-500 dark:text-gray-400"> of ${formatBytes(swapTotalKB * 1024)}</span>`;
+            document.getElementById('swap-progress').style.width = `${swapProgress}%`;
+            document.getElementById('swap-text').textContent = `${swapProgress.toFixed(2)}% used`;
+
+            const mainDiskUsed = stats.main_disk_used_bytes;
+            const mainDiskTotal = stats.main_disk_total_bytes;
+            const mainDiskProgress = stats.main_disk_usage_percent;
+            document.getElementById('main-disk-used-value').textContent = `${formatBytes(mainDiskUsed)}`;
+            document.getElementById('main-disk-used-value').innerHTML += `<span class="text-sm font-medium text-gray-500 dark:text-gray-400"> of ${formatBytes(mainDiskTotal)}</span>`;
+            document.getElementById('main-disk-progress').style.width = `${mainDiskProgress}%`;
+            document.getElementById('main-disk-text').textContent = `${mainDiskProgress.toFixed(2)}% used`;
+
+            const usbDiskCard = document.getElementById('usb-disk-card');
+            if (stats.usb_disk_total_bytes > 0) {
+                const usbDiskUsed = stats.usb_disk_used_bytes;
+                const usbDiskTotal = stats.usb_disk_total_bytes;
+                const usbDiskProgress = stats.usb_disk_usage_percent;
+                document.getElementById('usb-disk-used-value').textContent = `${formatBytes(usbDiskUsed)}`;
+                document.getElementById('usb-disk-used-value').innerHTML += `<span class="text-sm font-medium text-gray-500 dark:text-gray-400"> of ${formatBytes(usbDiskTotal)}</span>`;
+                document.getElementById('usb-disk-progress').style.width = `${usbDiskProgress}%`;
+                document.getElementById('usb-disk-text').textContent = `${usbDiskProgress.toFixed(2)}% used`;
+                usbDiskCard.style.display = 'block';
+            } else {
+                usbDiskCard.style.display = 'none';
+            }
+            
+            document.getElementById('network-speed-value').innerHTML = 
+                `<span class="text-sm font-medium text-gray-500 dark:text-gray-400">Download: </span>${formatBytes(stats.net_download_bytes_sec)}/s<br/>
+                 <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Upload: </span>${formatBytes(stats.net_upload_bytes_sec)}/s`;
+
+            document.getElementById('network-total-value').innerHTML =
+                `<span class="text-sm font-medium text-gray-500 dark:text-gray-400">Downloaded: </span>${formatBytes(stats.net_total_bytes_recv)}<br/>
+                 <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Uploaded: </span>${formatBytes(stats.net_total_bytes_sent)}`;
+
+            lucide.createIcons();
+        };
+
+        const fetchData = async () => {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error("Failed to fetch stats:", error);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+            setInterval(fetchData, 1000);
+        });
+    </script>
+</body>
+</html>
