@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Status Dashboard</title>
+    <title>System Status</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -158,7 +158,7 @@
     </div>
     
     <script>
-        const API_URL = 'http://192.168.1.3:3040/stats';
+        const API_URL = '/stats';
         
         const formatBytes = (bytes) => {
             if (bytes === 0) return '0 Bytes';
