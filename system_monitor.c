@@ -134,15 +134,48 @@ double get_cpu_usage_percent() {
 }
 
 void get_network_stats(double *upload_speed_bytes_sec,
-                       double *download_speed_bytes_sec,
-                       unsigned long long *total_bytes_sent,
-                       unsigned long long *total_bytes_recv) {
+                        double *download_speed_bytes_sec,
+                        unsigned long long *total_bytes_sent,
+                        unsigned long long *total_bytes_recv) {
     pthread_mutex_lock(&live_stats_mutex);
     *upload_speed_bytes_sec = live_stats.net_upload_bytes_sec;
     *download_speed_bytes_sec = live_stats.net_download_bytes_sec;
     *total_bytes_sent = live_stats.net_total_bytes_sent;
     *total_bytes_recv = live_stats.net_total_bytes_recv;
     pthread_mutex_unlock(&live_stats_mutex);
+}
+
+void get_os_info(char* kernel_version, size_t kernel_size, char* distro_name, size_t distro_size) {
+    FILE* fp;
+    char line[256];
+    strcpy(kernel_version, "Unknown");
+    strcpy(distro_name, "Unknown");
+    fp = fopen("/proc/version", "r");
+    if (fp) {
+        if (fgets(line, sizeof(line), fp)) {
+            sscanf(line, "Linux version %s", kernel_version);
+        }
+        fclose(fp);
+    }
+    fp = fopen("/etc/os-release", "r");
+    if (fp) {
+        while (fgets(line, sizeof(line), fp)) {
+            if (strstr(line, "PRETTY_NAME=") == line) {
+                char* start = strchr(line, '"');
+                if (start) {
+                    start++;
+                    char* end = strchr(start, '"');
+                    if (end) {
+                        *end = '\0';
+                        strncpy(distro_name, start, distro_size - 1);
+                        distro_name[distro_size - 1] = '\0';
+                        break;
+                    }
+                }
+            }
+        }
+        fclose(fp);
+    }
 }
 
 void* stats_updater(void* arg) {
@@ -220,58 +253,80 @@ void* stats_updater(void* arg) {
 
 void process_request(int client_socket) {
     char buffer[BUFFER_SIZE];
+    char method[16], path[256];
     read(client_socket, buffer, BUFFER_SIZE - 1);
-    unsigned long long cpu_uptime_seconds = get_uptime_seconds();
-    double cpu_usage_percent = get_cpu_usage_percent();
-    unsigned long long ram_total_kb, ram_used_kb, swap_total_kb, swap_used_kb;
-    get_ram_swap_stats(&ram_total_kb, &ram_used_kb, &swap_total_kb, &swap_used_kb);
-    int cpu_temp_millicelsius = get_cpu_temp_millicelsius();
-    unsigned long long main_disk_total_bytes, main_disk_used_bytes;
-    double main_disk_percent;
-    get_disk_usage("/", &main_disk_total_bytes, &main_disk_used_bytes, &main_disk_percent);
-    unsigned long long usb_disk_total_bytes, usb_disk_used_bytes;
-    double usb_disk_percent;
-    get_disk_usage("/mnt/usb", &usb_disk_total_bytes, &usb_disk_used_bytes, &usb_disk_percent);
-    double upload_speed_bytes_sec, download_speed_bytes_sec;
-    unsigned long long total_bytes_sent, total_bytes_recv;
-    get_network_stats(&upload_speed_bytes_sec, &download_speed_bytes_sec, &total_bytes_sent, &total_bytes_recv);
+    sscanf(buffer, "%15s %255s", method, path);
     char json_response[BUFFER_SIZE * 2];
-    snprintf(json_response, sizeof(json_response),
-        "{"
-        "\"cpu_uptime_seconds\": %llu,"
-        "\"cpu_usage_percent\": %.2f,"
-        "\"ram_total_kb\": %llu,"
-        "\"ram_used_kb\": %llu,"
-        "\"swap_total_kb\": %llu,"
-        "\"swap_used_kb\": %llu,"
-        "\"cpu_temp_millicelsius\": %d,"
-        "\"net_upload_bytes_sec\": %.2f,"
-        "\"net_download_bytes_sec\": %.2f,"
-        "\"net_total_bytes_sent\": %llu,"
-        "\"net_total_bytes_recv\": %llu,"
-        "\"main_disk_total_bytes\": %llu,"
-        "\"main_disk_used_bytes\": %llu,"
-        "\"main_disk_usage_percent\": %.2f,"
-        "\"usb_disk_total_bytes\": %llu,"
-        "\"usb_disk_used_bytes\": %llu,"
-        "\"usb_disk_usage_percent\": %.2f"
-        "}",
-        cpu_uptime_seconds,
-        cpu_usage_percent,
-        ram_total_kb, ram_used_kb, swap_total_kb, swap_used_kb,
-        cpu_temp_millicelsius,
-        upload_speed_bytes_sec, download_speed_bytes_sec,
-        total_bytes_sent, total_bytes_recv,
-        main_disk_total_bytes, main_disk_used_bytes, main_disk_percent,
-        usb_disk_total_bytes, usb_disk_used_bytes, usb_disk_percent
-    );
     char http_header[256];
-    snprintf(http_header, sizeof(http_header),
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type: application/json\r\n"
-        "Content-Length: %zu\r\n"
-        "Access-Control-Allow-Origin: *\r\n"
-        "\r\n", strlen(json_response));
+    if (strcmp(path, "/distro") == 0) {
+        char kernel_version[128];
+        char distro_name[128];
+        get_os_info(kernel_version, sizeof(kernel_version), distro_name, sizeof(distro_name));
+        snprintf(json_response, sizeof(json_response),
+            "{"
+            "\"kernel_version\": \"%s\","
+            "\"distro_name\": \"%s\""
+            "}",
+            kernel_version,
+            distro_name
+        );
+        snprintf(http_header, sizeof(http_header),
+            "HTTP/1.1 200 OK\r\n"
+            "Content-Type: application/json\r\n"
+            "Content-Length: %zu\r\n"
+            "Access-Control-Allow-Origin: *\r\n"
+            "\r\n", strlen(json_response));
+    } else if (strcmp(path, "/") == 0) {
+        unsigned long long cpu_uptime_seconds = get_uptime_seconds();
+        double cpu_usage_percent = get_cpu_usage_percent();
+        unsigned long long ram_total_kb, ram_used_kb, swap_total_kb, swap_used_kb;
+        get_ram_swap_stats(&ram_total_kb, &ram_used_kb, &swap_total_kb, &swap_used_kb);
+        int cpu_temp_millicelsius = get_cpu_temp_millicelsius();
+        unsigned long long main_disk_total_bytes, main_disk_used_bytes;
+        double main_disk_percent;
+        get_disk_usage("/", &main_disk_total_bytes, &main_disk_used_bytes, &main_disk_percent);
+        double upload_speed_bytes_sec, download_speed_bytes_sec;
+        unsigned long long total_bytes_sent, total_bytes_recv;
+        get_network_stats(&upload_speed_bytes_sec, &download_speed_bytes_sec, &total_bytes_sent, &total_bytes_recv);
+        snprintf(json_response, sizeof(json_response),
+            "{"
+            "\"cpu_uptime_seconds\": %llu,"
+            "\"cpu_usage_percent\": %.2f,"
+            "\"ram_total_kb\": %llu,"
+            "\"ram_used_kb\": %llu,"
+            "\"swap_total_kb\": %llu,"
+            "\"swap_used_kb\": %llu,"
+            "\"cpu_temp_millicelsius\": %d,"
+            "\"net_upload_bytes_sec\": %.2f,"
+            "\"net_download_bytes_sec\": %.2f,"
+            "\"net_total_bytes_sent\": %llu,"
+            "\"net_total_bytes_recv\": %llu,"
+            "\"main_disk_total_bytes\": %llu,"
+            "\"main_disk_used_bytes\": %llu,"
+            "\"main_disk_usage_percent\": %.2f"
+            "}",
+            cpu_uptime_seconds,
+            cpu_usage_percent,
+            ram_total_kb, ram_used_kb, swap_total_kb, swap_used_kb,
+            cpu_temp_millicelsius,
+            upload_speed_bytes_sec, download_speed_bytes_sec,
+            total_bytes_sent, total_bytes_recv,
+            main_disk_total_bytes, main_disk_used_bytes, main_disk_percent
+        );
+        snprintf(http_header, sizeof(http_header),
+            "HTTP/1.1 200 OK\r\n"
+            "Content-Type: application/json\r\n"
+            "Content-Length: %zu\r\n"
+            "Access-Control-Allow-Origin: *\r\n"
+            "\r\n", strlen(json_response));
+    } else {
+        strcpy(json_response, "Not Found");
+        snprintf(http_header, sizeof(http_header),
+            "HTTP/1.1 404 Not Found\r\n"
+            "Content-Type: text/plain\r\n"
+            "Content-Length: %zu\r\n"
+            "\r\n", strlen(json_response));
+    }
     write(client_socket, http_header, strlen(http_header));
     write(client_socket, json_response, strlen(json_response));
     close(client_socket);
