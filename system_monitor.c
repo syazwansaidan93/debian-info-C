@@ -276,7 +276,7 @@ void process_request(int client_socket) {
             "Content-Length: %zu\r\n"
             "Access-Control-Allow-Origin: *\r\n"
             "\r\n", strlen(json_response));
-    } else if (strcmp(path, "/") == 0) {
+    } else if (strcmp(path, "/stats") == 0) {
         unsigned long long cpu_uptime_seconds = get_uptime_seconds();
         double cpu_usage_percent = get_cpu_usage_percent();
         unsigned long long ram_total_kb, ram_used_kb, swap_total_kb, swap_used_kb;
