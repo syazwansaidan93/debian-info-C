@@ -3,99 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Status Dashboard</title>
+    <title>System Status</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
         :root {
-            --bg-start: #f3f4f6;
-            --bg-end: #e5e7eb;
-            --text-color: #1f2937;
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .dark {
-            --bg-start: #111827;
-            --bg-end: #1f2937;
-            --text-color: #f9fafb;
-            --card-bg: rgba(31, 41, 55, 0.8);
-            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            --bg-start: #1a0f3d;
+            --bg-end: #0c0825;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #e0e7ff;
+            --secondary-text-color: #a4b4f0;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            --border-color: rgba(255,255,255,0.2);
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
             color: var(--text-color);
-            transition: background-color 0.5s ease;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .bg-circle-1 {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #8A2BE2, #6a5acd, transparent);
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        .bg-circle-2 {
+            position: absolute;
+            bottom: 15%;
+            right: 10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #4682B4, #3a5fcd, transparent);
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.6;
+            z-index: -1;
         }
 
         .glass-card {
             background-color: var(--card-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border-radius: 1.5rem;
             box-shadow: var(--card-shadow);
             transition: all 0.3s ease-in-out;
+            border: 1px solid var(--border-color);
         }
 
         .glass-card:hover {
             transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
         .progress-bar {
-            background: linear-gradient(90deg, #6366F1, #A78BFA);
+            background: linear-gradient(90deg, #A78BFA, #6366F1);
             height: 0.625rem;
             border-radius: 9999px;
             transition: width 0.5s ease-in-out;
         }
-
-        .dark .progress-bar {
-            background: linear-gradient(90deg, #8B5CF6, #EC4899);
-        }
-
-        #theme-toggle {
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        
-        #theme-toggle:hover {
-            transform: scale(1.1);
-        }
     </style>
 </head>
-<body class="min-h-screen p-4 sm:p-8">
+<body class="p-4 sm:p-8 relative">
 
-<header class="max-w-7xl mx-auto flex justify-between items-center py-4 mb-8">
-    <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">
-        System Status
-    </h1>
-    <button id="theme-toggle" aria-label="Toggle dark mode" class="p-2 rounded-full text-gray-800 dark:text-gray-200">
-        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-    </button>
+<div class="bg-circle-1"></div>
+<div class="bg-circle-2"></div>
+
+<header class="max-w-7xl mx-auto flex justify-between items-center py-4 mb-8 relative z-10">
 </header>
 
-<div id="dashboard-content" class="max-w-7xl mx-auto pb-8 space-y-8">
+<div id="dashboard-content" class="max-w-7xl mx-auto pb-8 space-y-8 relative z-10">
 
-    <!-- CPU & System -->
     <section>
-        <h2 class="text-2xl font-bold mb-6">CPU & System</h2>
+        <h2 class="text-2xl font-bold mb-6 text-white">CPU & System</h2>
         <div class="grid gap-6 md:grid-cols-2">
-            <!-- CPU Usage -->
             <div class="glass-card p-6 flex flex-col">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-500 p-3 rounded-full text-white">
@@ -109,14 +103,13 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
                         <div class="progress-bar" id="cpu-usage-progress"></div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="cpu-usage-text"></p>
+                    <p class="text-sm text-secondary-text-color mt-2" id="cpu-usage-text"></p>
                 </div>
             </div>
 
-            <!-- CPU Temp -->
             <div class="glass-card p-6 flex flex-col">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-500 p-3 rounded-full text-white">
@@ -127,18 +120,16 @@
                     <div>
                         <h3 class="text-xl font-semibold">CPU Temp</h3>
                         <p class="text-3xl font-bold mt-1 count-up" id="cpu-temp-value"></p>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1" id="cpu-temp-uptime-value"></p>
+                        <p class="text-sm font-medium text-secondary-text-color mt-1" id="cpu-temp-uptime-value"></p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Memory -->
     <section>
-        <h2 class="text-2xl font-bold mb-6">Memory</h2>
+        <h2 class="text-2xl font-bold mb-6 text-white">Memory</h2>
         <div class="grid gap-6 md:grid-cols-2">
-            <!-- RAM Used -->
             <div class="glass-card p-6 flex flex-col">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-500 p-3 rounded-full text-white">
@@ -152,14 +143,13 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
                         <div class="progress-bar" id="ram-progress"></div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="ram-text"></p>
+                    <p class="text-sm text-secondary-text-color mt-2" id="ram-text"></p>
                 </div>
             </div>
 
-            <!-- Swap Used -->
             <div class="glass-card p-6 flex flex-col">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-500 p-3 rounded-full text-white">
@@ -173,20 +163,18 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
                         <div class="progress-bar" id="swap-progress"></div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="swap-text"></p>
+                    <p class="text-sm text-secondary-text-color mt-2" id="swap-text"></p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Disk Usage -->
     <section>
-        <h2 class="text-2xl font-bold mb-6">Disk Usage</h2>
+        <h2 class="text-2xl font-bold mb-6 text-white">Disk Usage</h2>
         <div class="grid gap-6 md:grid-cols-2">
-            <!-- Main Disk -->
             <div class="glass-card p-6 flex flex-col">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-500 p-3 rounded-full text-white">
@@ -200,14 +188,13 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
                         <div class="progress-bar" id="main-disk-progress"></div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="main-disk-text"></p>
+                    <p class="text-sm text-secondary-text-color mt-2" id="main-disk-text"></p>
                 </div>
             </div>
 
-            <!-- USB Disk -->
             <div class="glass-card p-6 flex flex-col" id="usb-disk-card" style="display:none;">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-500 p-3 rounded-full text-white">
@@ -221,18 +208,17 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
                         <div class="progress-bar" id="usb-disk-progress"></div>
                     </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="usb-disk-text"></p>
+                    <p class="text-sm text-secondary-text-color mt-2" id="usb-disk-text"></p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Network -->
     <section>
-        <h2 class="text-2xl font-bold mb-6">Network</h2>
+        <h2 class="text-2xl font-bold mb-6 text-white">Network</h2>
         <div class="grid gap-6 md:grid-cols-2">
             <div class="glass-card p-6 flex flex-col">
                 <div class="flex items-center space-x-4">
@@ -263,9 +249,8 @@
         </div>
     </section>
 
-    <!-- Operating System -->
     <section>
-        <h2 class="text-2xl font-bold mb-6">Operating System</h2>
+        <h2 class="text-2xl font-bold mb-6 text-white">Operating System</h2>
         <div class="grid gap-6 md:grid-cols-2">
             <div class="glass-card p-6 flex flex-col">
                 <div class="flex items-center space-x-4">
@@ -299,8 +284,8 @@
 </div>
 
 <script>
-    const API_URL = '/stats';
-    const OS_API_URL = '/distro';
+    const API_URL = '/api/stats';
+    const OS_API_URL = '/api/distro';
 
     const formatBytes = (bytes) => {
         if (bytes === 0) return '0 Bytes';
@@ -334,21 +319,21 @@
         const ramUsedKB = stats.ram_used_kb;
         const ramTotalKB = stats.ram_total_kb;
         const ramProgress = (ramUsedKB / ramTotalKB) * 100;
-        document.getElementById('ram-used-value').innerHTML = `${formatBytes(ramUsedKB * 1024)} <span class="text-sm font-medium text-gray-500 dark:text-gray-400">of ${formatBytes(ramTotalKB * 1024)}</span>`;
+        document.getElementById('ram-used-value').innerHTML = `${formatBytes(ramUsedKB * 1024)} <span class="text-sm font-medium text-secondary-text-color">of ${formatBytes(ramTotalKB * 1024)}</span>`;
         document.getElementById('ram-progress').style.width = `${ramProgress}%`;
         document.getElementById('ram-text').textContent = `${ramProgress.toFixed(2)}% used`;
 
         const swapUsedKB = stats.swap_used_kb;
         const swapTotalKB = stats.swap_total_kb;
         const swapProgress = (swapTotalKB > 0) ? (swapUsedKB / swapTotalKB) * 100 : 0;
-        document.getElementById('swap-used-value').innerHTML = `${formatBytes(swapUsedKB * 1024)} <span class="text-sm font-medium text-gray-500 dark:text-gray-400">of ${formatBytes(swapTotalKB * 1024)}</span>`;
+        document.getElementById('swap-used-value').innerHTML = `${formatBytes(swapUsedKB * 1024)} <span class="text-sm font-medium text-secondary-text-color">of ${formatBytes(swapTotalKB * 1024)}</span>`;
         document.getElementById('swap-progress').style.width = `${swapProgress}%`;
         document.getElementById('swap-text').textContent = `${swapProgress.toFixed(2)}% used`;
 
         const mainDiskUsed = stats.main_disk_used_bytes;
         const mainDiskTotal = stats.main_disk_total_bytes;
         const mainDiskProgress = stats.main_disk_usage_percent;
-        document.getElementById('main-disk-used-value').innerHTML = `${formatBytes(mainDiskUsed)} <span class="text-sm font-medium text-gray-500 dark:text-gray-400">of ${formatBytes(mainDiskTotal)}</span>`;
+        document.getElementById('main-disk-used-value').innerHTML = `${formatBytes(mainDiskUsed)} <span class="text-sm font-medium text-secondary-text-color">of ${formatBytes(mainDiskTotal)}</span>`;
         document.getElementById('main-disk-progress').style.width = `${mainDiskProgress}%`;
         document.getElementById('main-disk-text').textContent = `${mainDiskProgress.toFixed(2)}% used`;
 
@@ -357,7 +342,7 @@
             const usbDiskUsed = stats.usb_disk_used_bytes;
             const usbDiskTotal = stats.usb_disk_total_bytes;
             const usbDiskProgress = stats.usb_disk_usage_percent;
-            document.getElementById('usb-disk-used-value').innerHTML = `${formatBytes(usbDiskUsed)} <span class="text-sm font-medium text-gray-500 dark:text-gray-400">of ${formatBytes(usbDiskTotal)}</span>`;
+            document.getElementById('usb-disk-used-value').innerHTML = `${formatBytes(usbDiskUsed)} <span class="text-sm font-medium text-secondary-text-color">of ${formatBytes(usbDiskTotal)}</span>`;
             document.getElementById('usb-disk-progress').style.width = `${usbDiskProgress}%`;
             document.getElementById('usb-disk-text').textContent = `${usbDiskProgress.toFixed(2)}% used`;
             usbDiskCard.style.display = 'flex';
@@ -366,12 +351,12 @@
         }
 
         document.getElementById('network-speed-value').innerHTML =
-            `<span class="text-sm font-medium text-gray-500 dark:text-gray-400">Download: </span>${formatBytes(stats.net_download_bytes_sec)}/s<br/>
-             <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Upload: </span>${formatBytes(stats.net_upload_bytes_sec)}/s`;
+            `<span class="text-sm font-medium text-secondary-text-color">Download: </span>${formatBytes(stats.net_download_bytes_sec)}/s<br/>
+             <span class="text-sm font-medium text-secondary-text-color">Upload: </span>${formatBytes(stats.net_upload_bytes_sec)}/s`;
 
         document.getElementById('network-total-value').innerHTML =
-            `<span class="text-sm font-medium text-gray-500 dark:text-gray-400">Downloaded: </span>${formatBytes(stats.net_total_bytes_recv)}<br/>
-             <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Uploaded: </span>${formatBytes(stats.net_total_bytes_sent)}`;
+            `<span class="text-sm font-medium text-secondary-text-color">Downloaded: </span>${formatBytes(stats.net_total_bytes_recv)}<br/>
+             <span class="text-sm font-medium text-secondary-text-color">Uploaded: </span>${formatBytes(stats.net_total_bytes_sent)}`;
     };
 
     const fetchData = async () => {
@@ -401,31 +386,6 @@
         fetchData();
         fetchOSData();
         setInterval(fetchData, 1000);
-
-        const toggleButton = document.getElementById('theme-toggle');
-        const sunIcon = document.getElementById('sun-icon');
-        const moonIcon = document.getElementById('moon-icon');
-
-        const isDarkMode = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        if (isDarkMode) {
-            document.documentElement.classList.add('dark');
-            sunIcon.classList.remove('hidden');
-            moonIcon.classList.add('hidden');
-        }
-
-        toggleButton.addEventListener('click', () => {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                moonIcon.classList.remove('hidden');
-                sunIcon.classList.add('hidden');
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            }
-        });
     });
 </script>
 </body>
